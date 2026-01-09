@@ -1,9 +1,11 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface ILeaveItem {
-  type: "PTO" | "UTO" | "SICK";
+  type: "PTO" | "UTO" | "SICK" | "CASUAL";
   totalDays: number;
   totalHours: number;
+  usedDays: number;
+  usedHours: number;
   remainingDays: number;
   remainingHours: number;
 }
@@ -15,12 +17,12 @@ export interface ILeaveBalance extends Document {
   note?: string;
   status: "ACTIVE" | "INACTIVE" | "DELETED";
   leaves: ILeaveItem[];
-
   createdBy?: string;
   updatedBy?: string;
   createdAt: Date;
   updatedAt: Date;
 }
+
 
 const LeaveItemSchema = new Schema<ILeaveItem>(
   {
@@ -50,7 +52,7 @@ const LeaveItemSchema = new Schema<ILeaveItem>(
       default: 0,
     },
   },
-  { _id: false } // prevent auto _id for subdocuments
+  { _id: false } // prevent auto _id for sub-documents
 );
 
 const LeaveBalanceSchema = new Schema<ILeaveBalance>(
