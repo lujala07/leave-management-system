@@ -7,7 +7,7 @@ export interface ILeaveRequest extends Document {
   endDate: Date;
   numberOfHours?: number;
 
-  leaveType: "PTO" | "UTO" | "SICK" | "CASUAL";
+  type: "PTO" | "UTO" | "SICK" | "CASUAL";
   stage: "REQUESTED" | "APPROVED" | "REJECTED";
   status: "ACTIVE" | "INACTIVE" | "DELETED";
 
@@ -54,7 +54,7 @@ const LeaveRequestSchema = new Schema<ILeaveRequest>(
       type: Number,
     },
 
-    leaveType: {
+    type: {
       type: String,
       enum: ["PTO", "UTO", "SICK", "CASUAL"],
       required: true,
