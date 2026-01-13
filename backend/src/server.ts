@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import express from "express";
 import connectDB from "./config/db";
-import userRoutes from "./routes/user.routes"
+import userRoutes from "./routes/user.routes";
+import leaveRequestRoutes from "./routes/leaveRequest.routes";
 
 dotenv.config();
 
@@ -14,6 +15,8 @@ app.use(express.json());
 
 
 app.use("/api/users", userRoutes);
+app.use("/api/leave-requests", leaveRequestRoutes);
+
 
 
 app.get("/", (req,res)=>{
