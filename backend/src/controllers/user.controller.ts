@@ -100,7 +100,8 @@ export const updateUser= async(req: Request, res: Response)=>{
       return;
     }
     
-    const {name, email, department, role, employmentType, status}=user;
+    const {name, email, department, role, employmentType, status}=req.body;
+    
     if (email && email !== user.email) {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
