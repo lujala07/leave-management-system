@@ -3,6 +3,7 @@ import express from "express";
 import connectDB from "./config/db";
 import userRoutes from "./routes/user.routes";
 import leaveRequestRoutes from "./routes/leaveRequest.routes";
+import leaveBalanceRoutes from "./routes/leaveBalance.routes";
 
 dotenv.config();
 
@@ -13,9 +14,9 @@ connectDB();
 
 app.use(express.json());
 
-
 app.use("/api/users", userRoutes);
 app.use("/api/leave-requests", leaveRequestRoutes);
+app.use("/api/leave-balances", leaveBalanceRoutes);
 
 
 
