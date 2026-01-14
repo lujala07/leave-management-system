@@ -1,4 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { userRole } from "../enums/userRole.enum";
+import { userStatus } from "../enums/userStatus.enum";
+import { employmentType } from "../enums/employmentType.enum";
+import { departmentType } from "../enums/departmentType.enum";
+import { genderType } from "../enums/genderType.enum";
 
 export interface IUser extends Document {
   userId: string;
@@ -8,16 +13,16 @@ export interface IUser extends Document {
   password: string;
   phoneNumber?: string;
 
-  role: "EMPLOYEE" | "ADMIN" | "SUPER_ADMIN";
-  status: "ACTIVE" | "INACTIVE" | "DELETED";
+  role: userRole;
+  status: userStatus;
 
   employmentStartDate?: Date;
   employmentEndDate?: Date;
-  employmentType: "FULL_TIME" | "PART_TIME";
+  employmentType: employmentType;
 
-  department: "IT" | "MARKETING" | "HR";
+  department: departmentType;
   designation?: string;
-  gender?: "MALE" | "FEMALE" | "OTHER";
+  gender?: genderType;
 
   profilePicture?: string;
 
@@ -63,15 +68,15 @@ const UserSchema = new Schema<IUser>(
 
     role: {
       type: String,
-      enum: ["EMPLOYEE", "ADMIN", "SUPER_ADMIN"],
-      default: "EMPLOYEE",
+      enum: Object.values(userRole),
+      default: userRole.EMPLOYEE,
       required: true,
     },
 
     status: {
       type: String,
-      enum: ["ACTIVE", "INACTIVE", "DELETED"],
-      default: "ACTIVE",
+      enum: Object.values(userStatus),
+      default: userStatus.ACTIVE,
       required: true,
     },
 
@@ -85,13 +90,13 @@ const UserSchema = new Schema<IUser>(
 
     employmentType: {
       type: String,
-      enum: ["FULL_TIME", "PART_TIME"],
+      enum: Object.values(employmentType),
       required: true,
     },
 
     department: {
       type: String,
-      enum: ["IT", "MARKETING", "HR"],
+      enum: Object.values(departmentType),
       required: true,
     },
 
@@ -102,7 +107,7 @@ const UserSchema = new Schema<IUser>(
 
     gender: {
       type: String,
-      enum: ["MALE", "FEMALE", "OTHER"],
+      enum: Object.values(genderType),
     },
 
     profilePicture: {

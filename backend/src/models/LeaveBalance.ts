@@ -1,7 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { leaveType } from "../enums/leaveType.enum";
+import { userStatus } from "../enums/userStatus.enum";
 
 export interface ILeaveItem {
-  type: "PTO" | "UTO" | "SICK" | "CASUAL";
+  type: leaveType;
   totalDays: number;
   totalHours: number;
   usedDays: number;
@@ -15,7 +17,7 @@ export interface ILeaveBalance extends Document {
   locked: number;
   year: number;
   note?: string;
-  status: "ACTIVE" | "INACTIVE" | "DELETED";
+  status: userStatus;
   leaves: ILeaveItem[];
   createdBy?: string;
   updatedBy?: string;
@@ -28,7 +30,7 @@ const LeaveItemSchema = new Schema<ILeaveItem>(
   {
     type: {
       type: String,
-      enum: ["PTO", "UTO", "SICK"],
+      enum: Object.values(leaveType),
       required: true,
     },
     totalDays: {
@@ -80,8 +82,8 @@ const LeaveBalanceSchema = new Schema<ILeaveBalance>(
 
     status: {
       type: String,
-      enum: ["ACTIVE", "INACTIVE", "DELETED"],
-      default: "ACTIVE",
+      enum: Object.values(userStatus),
+      default: userStatus.ACTIVE,
       required: true,
     },
 

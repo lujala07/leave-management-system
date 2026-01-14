@@ -1,4 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { leaveType } from "../enums/leaveType.enum";
+import { leaveStages } from "../enums/leaveStages.enum";
+import { userStatus } from "../enums/userStatus.enum";
 
 export interface ILeaveRequest extends Document {
   requestId: string; // unique key
@@ -7,9 +10,9 @@ export interface ILeaveRequest extends Document {
   endDate: Date;
   numberOfHours?: number;
 
-  type: "PTO" | "UTO" | "SICK" | "CASUAL";
-  stage: "REQUESTED" | "APPROVED" | "REJECTED";
-  status: "ACTIVE" | "INACTIVE" | "DELETED";
+  type: leaveType;
+  stage: leaveStages;
+  status: userStatus;
 
   reason?: string;
   note?: string;
@@ -56,21 +59,21 @@ const LeaveRequestSchema = new Schema<ILeaveRequest>(
 
     type: {
       type: String,
-      enum: ["PTO", "UTO", "SICK", "CASUAL"],
+      enum: Object.values(leaveType),
       required: true,
     },
 
     stage: {
       type: String,
-      enum: ["REQUESTED", "APPROVED", "REJECTED"],
-      default: "REQUESTED",
+      enum: Object.values(leaveStages),
+      default: leaveStages.REQUESTED,
       required: true,
     },
 
     status: {
       type: String,
-      enum: ["ACTIVE", "INACTIVE", "DELETED"],
-      default: "ACTIVE",
+      enum: Object.values(userStatus),
+      default: userStatus.ACTIVE,
       required: true,
     },
 
