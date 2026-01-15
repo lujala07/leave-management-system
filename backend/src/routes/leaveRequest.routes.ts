@@ -12,10 +12,10 @@ const router = Router();
 
 router.post("/", applyLeave);
 router.get("/", getAllLeaveRequest);
-router.get("/user/:userId", getLeaveRequestByUser);
+router.get("/users/:requestId", getLeaveRequestByUser); 
 
-router.put("/:id/approve", approveLeave);
-router.put("/:id/reject", rejectLeave);
-router.delete("/:id",deleteLeave);
+router.put("/approve/:requestId", approveLeave);
+router.put("/reject/:requestId", rejectLeave);
+router.delete("/:requestId",deleteLeave);
 
 export default router;

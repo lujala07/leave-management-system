@@ -4,15 +4,15 @@ import {
   getAllLeaveBalances,
   getLeaveBalanceByUser,
   updateLeaveBalance,
-  deactivateLeaveBalance,
+  deleteLeaveBalance,
 } from "../controllers/leaveBalance.controller";
 
 const router= Router();
 
 router.post("/",createLeaveBalance);
 router.get("/",getAllLeaveBalances);
-router.get("/user/:userId",getLeaveBalanceByUser);
-router.put("/:id", updateLeaveBalance);
-router.put("/:id/deactivate",deactivateLeaveBalance);
+router.get("/user/:balanceId",getLeaveBalanceByUser);
+router.put("/:balanceId", updateLeaveBalance);
+router.put("/delete/:balanceId",deleteLeaveBalance);
 
 export default router; 

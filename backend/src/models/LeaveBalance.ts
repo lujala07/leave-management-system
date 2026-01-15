@@ -13,7 +13,8 @@ export interface ILeaveItem {
 }
 
 export interface ILeaveBalance extends Document {
-  user: mongoose.Types.ObjectId;
+  balanceId: string;
+  user: string;
   locked: number;
   year: number;
   note?: string;
@@ -24,7 +25,6 @@ export interface ILeaveBalance extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
 
 const LeaveItemSchema = new Schema<ILeaveItem>(
   {
@@ -59,9 +59,13 @@ const LeaveItemSchema = new Schema<ILeaveItem>(
 
 const LeaveBalanceSchema = new Schema<ILeaveBalance>(
   {
+    balanceId: { 
+      type: String, 
+      required: true, 
+      unique: true },
+      
     user: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+      type: String,
       required: true,
     },
 
@@ -107,4 +111,7 @@ const LeaveBalanceSchema = new Schema<ILeaveBalance>(
   }
 );
 
-export default mongoose.model<ILeaveBalance>("LeaveBalance", LeaveBalanceSchema);
+export default mongoose.model<ILeaveBalance>(
+  "LeaveBalance",
+  LeaveBalanceSchema
+);
