@@ -1,156 +1,89 @@
 import { Request, Response } from "express";
-import LeaveRequest from "../models/LeaveRequest";
-import User from "../models/User";
+import {
+  applyLeaveService,
+  getAllLeaveRequestsService,
+  getLeaveByIdService,
+  approveLeaveService,
+  rejectLeaveService,
+  deleteLeaveService,
+} from "../services/leaveRequest.services";
+
+import { errorResponse, successResponse } from "../utils/apiResponse";
 
 // apply for leave
 export const applyLeave = async (req: Request, res: Response) => {
   try {
-    const { requestId,user, startDate, endDate, type, reason, numberOfHours } = req.body;
-    if (!user || !startDate || !endDate || !type) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    //check user exists
-    const existingUser = await User.findById(user);
-    if (!existingUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const leaveRequest = await LeaveRequest.create({
-      requestId : `LR-${Date.now()}`,
-      user,
-      startDate,
-      endDate,
-      type,
-      numberOfHours,
-      reason,
-      stage: "REQUESTED",
-      status: "ACTIVE",
-      createdBy: user,
-    });
-
+    const leave = await applyLeaveService(req.body);
     return res
       .status(201)
-      .json({ message: "Leave request created", leaveRequest });
-  } catch (error) {
-    return res.status(500).json({ message: "Failed to apply", error });
+      .json(successResponse("Leave request created", leave));
+  } catch (error: any) {
+    return res
+      .status(400)
+      .json(errorResponse(error.message, error));
   }
 };
 
 // get all leave requests
 export const getAllLeaveRequest = async (req: Request, res: Response) => {
   try {
-    const requests = await LeaveRequest.find({ status: "ACTIVE" })
-      .populate("user", "name email role")
-      .sort({ createdAt: -1 });
+    const requests = await getAllLeaveRequestsService();
     return res
       .status(200)
-      .json({ message: "Fetched all leave request", requests });
-  } catch (error) {
+      .json(successResponse("Fetched all leave requests", requests));
+  } catch (error: any) {
     return res
       .status(500)
-      .json({ message: "Failed to fetch leave requests", error });
+      .json(errorResponse("Failed to fetch leave requests", error));
   }
 };
 
-// get leave request
+// get leave request by user
 export const getLeaveRequestByUser = async (req: Request, res: Response) => {
   try {
-    const { userId } = req.params;
-    const requests = await LeaveRequest.find({
-      user: userId,
-      status: "ACTIVE",
-    }).sort({ createdAt: -1 });
-
-    return res.status(200).json({
-      message: "User leave requests fetched",
-      requests,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Failed to fetch user leave requests",
-      error,
-    });
+    const { requestId } = req.params;
+    const leave = await getLeaveByIdService(requestId);
+    return res.status(200).json(successResponse("Leave request fetched", leave));
+  } catch (error: any) {
+    return res.status(404).json(errorResponse(error.message, error));
   }
 };
+
 
 // approve leave
 export const approveLeave = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { approvedBy, approvedId, note } = req.body;
-
-    const leave = await LeaveRequest.findById(id);
-    if (!leave) {
-      return res.status(404).json({ message: "Leave request not found" });
-    }
-
-    if (leave.stage !== "REQUESTED") {
-      return res
-        .status(400)
-        .json({ message: "Leave has already been processed" });
-    }
-    leave.stage = "APPROVED";
-    leave.approvedBy = approvedBy;
-    leave.approvedId = approvedId;
-    leave.approvedAt = new Date();
-    leave.note = note;
-
-    await leave.save();
-
-    return res.status(200).json({ message: "Leave approved", leave });
-  } catch (error) {
-    return res.status(500).json({ message: "Failed to approve", error });
+    const leave = await approveLeaveService(req.params.requestId, req.body);
+    return res
+      .status(200)
+      .json(successResponse("Leave approved", leave));
+  } catch (error: any) {
+    return res
+      .status(400)
+      .json(errorResponse(error.message, error));
   }
 };
 
-//reject leave
+// reject leave
 export const rejectLeave = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { note } = req.body;
-
-    const leave = await LeaveRequest.findById(id);
-
-    if (!leave) {
-      return res.status(404).json({ message: "Leave request not found" });
-    }
-    if (leave.stage !== "REQUESTED") {
-      return res
-        .status(400)
-        .json({ message: "Leave has already been processed" });
-    }
-    leave.stage = "REJECTED";
-    leave.note = note;
-
-    await leave.save();
-
-    return res.status(200).json({ message: "Leave rejected", leave });
-  } catch (error) {
-    return res.status(500).json({ message: "Failed to reject", error });
+    const leave = await rejectLeaveService(req.params.requestId, req.body.note);
+    return res
+      .status(200)
+      .json(successResponse("Leave rejected", leave));
+  } catch (error: any) {
+    return res
+      .status(400)
+      .json(errorResponse("Failed to reject leave", error));
   }
 };
 
-//delete leave
+// delete leave
 export const deleteLeave = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const leave = await LeaveRequest.findById(id);
-
-    if (!leave) {
-      return res.status(404).json({ message: "Leave request not found" });
-    }
-    if (leave.stage !== "REQUESTED") {
-      return res
-        .status(400)
-        .json({ message: "Leave has already been processed" });
-    }
-    leave.status = "DELETED";
-
-    await leave.save();
-
-    return res.status(200).json({ message: "Leave has been deleted", leave });
-  } catch (error) {
-    return res.status(500).json({ message: "Failed to delete leave", error });
+    const leave = await deleteLeaveService(req.params.requestId);
+    return res.status(200).json(successResponse("Leave has been deleted", leave));
+  } catch (error: any) {
+    return res.status(400).json(errorResponse(error.message, error));
   }
 };
